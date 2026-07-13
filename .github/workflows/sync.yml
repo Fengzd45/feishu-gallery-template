@@ -4,8 +4,10 @@ on:
   schedule:
     - cron: '0 18 * * *'  # 每天北京时间凌晨2点同步一次
   workflow_dispatch:        # 支持手动触发
+  repository_dispatch:      # 支持通过飞书发送的 HTTP 触发
+    types: [feishu-new-record]
 
-# 👇 新增：显式声明该工作流拥有“写入”权限
+# 显式声明该工作流拥有“写入”权限
 permissions:
   contents: write
 
@@ -41,5 +43,5 @@ jobs:
           # 没有变更则跳过提交
           git diff --quiet && git diff --staged --quiet || git commit -m "飞书自动同步 [skip ci]"
           
-          # 👇 关键修复：一定要指向你当前的仓库名 Fengzd45/2zcu592
+          # 推送更新
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
